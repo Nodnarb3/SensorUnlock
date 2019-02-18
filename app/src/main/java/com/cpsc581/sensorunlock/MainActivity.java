@@ -23,8 +23,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private static final String TAG = "SensorUnlock";
     private SensorManager sensorManager;
     private Sensor oSensor;
+    private float check = 0f;
 
     ImageView targetImage;
+    TextView degreeText;
     float currentDegree = 0f;
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         oSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
 
         targetImage = findViewById(R.id.targetView);
+        degreeText = (TextView) findViewById(R.id.degreeTextView);
     }
 
     @Override
@@ -58,8 +61,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sensorManager.unregisterListener(this, oSensor);
     }
 
+    @Override
     public void onSensorChanged(SensorEvent event)
     {
+        if(event.sensor.getType() == Sensor.TYPE_ORIENTATION){
+            getOrientation(event);
+        }
+
+    }
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int value){
+        return;
+    }
+
+    private void getOrientation(SensorEvent event){
         //TODO Use this value to rotate something on the screen
 
         //timeView.setText(Float.toString(Math.round(event.values[0])));
@@ -74,11 +89,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         targetImage.startAnimation(rotateAnimation);
         currentDegree = -degree;
-
-        Log.v(TAG, "Degrees:" + Float.toString(Math.round(event.values[0])));
-    }
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int value){
-        return;
+        if(check != degree);
+        {
+            check = degree;
+            Log.v(TAG, "Degrees:" + Float.toString(check));
+            degreeText.setText(Float.toString(check) + "°");
+        }
     }
 }
