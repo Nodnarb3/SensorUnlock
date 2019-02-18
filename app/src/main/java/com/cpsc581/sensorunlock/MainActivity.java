@@ -7,6 +7,12 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.hardware.SensorEventListener;
 import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 /*
 * Referenced from https://www.javacodegeeks.com/2013/09/android-compass-code-example.html
@@ -16,14 +22,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private static final String TAG = "SensorUnlock";
     private SensorManager sensorManager;
+    private Sensor oSensor;
 
+    ImageView targetImage;
+    float currentDegree = 0f;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getSupportActionBar().hide();
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
-
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        oSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+
+        targetImage = findViewById(R.id.targetView);
     }
 
     @Override
@@ -32,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onResume();
 
         // for the system's orientation sensor registered listeners
-        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
+        sensorManager.registerListener(this, oSensor,
                 SensorManager.SENSOR_DELAY_GAME);
     }
 
@@ -41,12 +55,25 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     {
         super.onPause();
 
-        sensorManager.unregisterListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR));
+        sensorManager.unregisterListener(this, oSensor);
     }
 
     public void onSensorChanged(SensorEvent event)
     {
         //TODO Use this value to rotate something on the screen
+
+        //timeView.setText(Float.toString(Math.round(event.values[0])));
+        float degree = Math.round(event.values[0]);
+
+
+        RotateAnimation rotateAnimation = new RotateAnimation(currentDegree,-degree, Animation.RELATIVE_TO_PARENT, 0f, Animation.RELATIVE_TO_PARENT, 0.25f);
+
+        rotateAnimation.setDuration(200);
+
+        rotateAnimation.setFillAfter(true);
+
+        targetImage.startAnimation(rotateAnimation);
+        currentDegree = -degree;
 
         Log.v(TAG, "Degrees:" + Float.toString(Math.round(event.values[0])));
     }
