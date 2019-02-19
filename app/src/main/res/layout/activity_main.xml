@@ -46,8 +46,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/digitalClock"
-        app:srcCompat="@drawable/userDot_drawable"
-        tools:srcCompat="@drawable/userDot_drawable" />
+        app:srcCompat="@drawable/userdot_drawable"
+        tools:srcCompat="@drawable/userdot_drawable" />
 
     <TextView
         android:id="@+id/degreeTextView"

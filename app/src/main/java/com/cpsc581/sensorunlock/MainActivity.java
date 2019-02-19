@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         currentDegree = degree;
         if(check != degree);
         {
-            userDot.getLocationOnScreen(posXY);
+            userDot.getLocationInWindow(posXY);
             int userDotX = posXY[0];
             int userDotY = posXY[1];
             check = degree;
