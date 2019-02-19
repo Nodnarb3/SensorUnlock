@@ -1,6 +1,5 @@
 package com.cpsc581.sensorunlock;
 
-import android.app.Activity;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,10 +29,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private static float startDegree = 0f;
 
     boolean isFirst = true;
-    ImageView targetImage;
+    ImageView userDot;
     TextView degreeText;
     View background;
     float currentDegree = 0f;
+    int[] posXY = new int[2];
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setContentView(R.layout.activity_main);
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         oSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-        targetImage = (ImageView) findViewById(R.id.targetView);
+        userDot = (ImageView) findViewById(R.id.userView);
         degreeText = (TextView) findViewById(R.id.degreeTextView);
         background = (View) findViewById(R.id.background);
     }
@@ -102,14 +102,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         rotateAnimation.setFillAfter(true);
 
-        targetImage.startAnimation(rotateAnimation);
+        userDot.startAnimation(rotateAnimation);
         currentDegree = degree;
         if(check != degree);
         {
+            userDot.getLocationOnScreen(posXY);
+            int userDotX = posXY[0];
+            int userDotY = posXY[1];
             check = degree;
             Log.v(TAG, "Check Degrees:" + Float.toString(check));
             Log.v(TAG, "Start Degrees:" + Float.toString(startDegree));
             Log.v(TAG, "Actual Degree:" + Float.toString(random));
+            Log.v(TAG, "User X" + Integer.toString(userDotX));
+            Log.v(TAG, "User Y" + Integer.toString(userDotY));
             degreeText.setText(Float.toString(check) + "°");
             if(check >= 0 && check < 90){
                 background.setBackgroundColor(Color.BLUE);
