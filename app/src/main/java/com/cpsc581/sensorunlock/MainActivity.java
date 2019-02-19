@@ -1,5 +1,6 @@
 package com.cpsc581.sensorunlock;
 
+import android.app.Activity;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,7 +27,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private SensorManager sensorManager;
     private Sensor oSensor;
     private float check = 0f;
+    private static float startDegree = 0f;
 
+    boolean isFirst = true;
     ImageView targetImage;
     TextView degreeText;
     View background;
@@ -41,8 +44,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setContentView(R.layout.activity_main);
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         oSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-
-
         targetImage = (ImageView) findViewById(R.id.targetView);
         degreeText = (TextView) findViewById(R.id.degreeTextView);
         background = (View) findViewById(R.id.background);
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onResume()
     {
         super.onResume();
-
+        isFirst = true;
         // for the system's orientation sensor registered listeners
         sensorManager.registerListener(this, oSensor,
                 SensorManager.SENSOR_DELAY_GAME);
@@ -74,6 +75,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
+    public int modulo( float m, int n ){
+        int mod =  (int) m % n ;
+        return ( mod < 0 ) ? mod + n : mod;
+    }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int value){
@@ -84,9 +89,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         //TODO Use this value to rotate something on the screen
 
         //timeView.setText(Float.toString(Math.round(event.values[0])));
-        float degree = Math.round(event.values[0]);
+        if(isFirst == true){
+            startDegree = Math.round(event.values[0]);
+            isFirst = false;
+        }
+        float random = Math.round(event.values[0]);
+        float degree = modulo(((random) - startDegree),360);
 
-        RotateAnimation rotateAnimation = new RotateAnimation(currentDegree,degree, Animation.RELATIVE_TO_PARENT, 0f, Animation.RELATIVE_TO_PARENT, 0.25f);
+        RotateAnimation rotateAnimation = new RotateAnimation(currentDegree, degree, Animation.RELATIVE_TO_PARENT, 0f, Animation.RELATIVE_TO_PARENT, 0.25f);
 
         rotateAnimation.setDuration(200);
 
@@ -97,7 +107,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if(check != degree);
         {
             check = degree;
-            Log.v(TAG, "Degrees:" + Float.toString(check));
+            Log.v(TAG, "Check Degrees:" + Float.toString(check));
+            Log.v(TAG, "Start Degrees:" + Float.toString(startDegree));
+            Log.v(TAG, "Actual Degree:" + Float.toString(random));
             degreeText.setText(Float.toString(check) + "°");
             if(check >= 0 && check < 90){
                 background.setBackgroundColor(Color.BLUE);
