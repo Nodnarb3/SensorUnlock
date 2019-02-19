@@ -86,14 +86,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         //timeView.setText(Float.toString(Math.round(event.values[0])));
         float degree = Math.round(event.values[0]);
 
-        RotateAnimation rotateAnimation = new RotateAnimation(currentDegree,-degree, Animation.RELATIVE_TO_PARENT, 0f, Animation.RELATIVE_TO_PARENT, 0.25f);
+        RotateAnimation rotateAnimation = new RotateAnimation(currentDegree,degree, Animation.RELATIVE_TO_PARENT, 0f, Animation.RELATIVE_TO_PARENT, 0.25f);
 
         rotateAnimation.setDuration(200);
 
         rotateAnimation.setFillAfter(true);
 
         targetImage.startAnimation(rotateAnimation);
-        currentDegree = -degree;
+        currentDegree = degree;
         if(check != degree);
         {
             check = degree;
