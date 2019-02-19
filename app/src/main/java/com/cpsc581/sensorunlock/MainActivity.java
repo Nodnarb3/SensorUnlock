@@ -113,8 +113,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             Log.v(TAG, "Check Degrees:" + Float.toString(check));
             Log.v(TAG, "Start Degrees:" + Float.toString(startDegree));
             Log.v(TAG, "Actual Degree:" + Float.toString(random));
-            Log.v(TAG, "User X" + Integer.toString(userDotX));
-            Log.v(TAG, "User Y" + Integer.toString(userDotY));
+            Log.v(TAG, "User X: " + Integer.toString(userDotX));
+            Log.v(TAG, "User Y: " + Integer.toString(userDotY));
             degreeText.setText(Float.toString(check) + "°");
             if(check >= 0 && check < 90){
                 background.setBackgroundColor(Color.BLUE);
