@@ -66,4 +66,32 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/digitalClock" />
 
+    <ImageView
+        android:id="@+id/targetDot1"
+        android:layout_width="20dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="75dp"
+        android:layout_marginTop="450dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="500dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/degreeTextView"
+        app:layout_constraintTop_toBottomOf="@+id/digitalClock"
+        app:srcCompat="@drawable/userdot_drawable" />
+
+    <ImageView
+        android:id="@+id/targetDot2"
+        android:layout_width="20dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="450dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginBottom="240dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/degreeTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/digitalClock"
+        app:srcCompat="@drawable/userdot_drawable" />
+
 </android.support.constraint.ConstraintLayout>

@@ -27,13 +27,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Sensor oSensor;
     private float check = 0f;
     private static float startDegree = 0f;
+    RotateAnimation rotateAnimation;
 
     boolean isFirst = true;
     ImageView userDot;
+    ImageView targetDot1;
+    ImageView targetDot2;
     TextView degreeText;
     View background;
     float currentDegree = 0f;
     int[] posXY = new int[2];
+    int userX;
+    int userY;
+    int statusFlag = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -45,6 +52,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         oSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
         userDot = (ImageView) findViewById(R.id.userView);
+        targetDot1 = (ImageView) findViewById(R.id.targetDot1);
+        targetDot2 = (ImageView) findViewById(R.id.targetDot2);
         degreeText = (TextView) findViewById(R.id.degreeTextView);
         background = (View) findViewById(R.id.background);
     }
@@ -96,7 +105,31 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         float random = Math.round(event.values[0]);
         float degree = modulo(((random) - startDegree),360);
 
-        RotateAnimation rotateAnimation = new RotateAnimation(currentDegree, degree, Animation.RELATIVE_TO_PARENT, 0f, Animation.RELATIVE_TO_PARENT, 0.25f);
+        rotateAnimation = new RotateAnimation(currentDegree, degree, Animation.RELATIVE_TO_PARENT, 0f, Animation.RELATIVE_TO_PARENT, 0.25f);
+        /*
+        rotateAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                userDot.getLocationInWindow(posXY);
+                userX = posXY[0];
+                userY = posXY[1];
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                userDot.getLocationInWindow(posXY);
+                userX = posXY[0];
+                userY = posXY[1];
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+                userDot.getLocationInWindow(posXY);
+                userX = posXY[0];
+                userY = posXY[1];
+            }
+        });
+        */
 
         rotateAnimation.setDuration(200);
 
@@ -106,29 +139,50 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         currentDegree = degree;
         if(check != degree);
         {
-            userDot.getLocationInWindow(posXY);
-            int userDotX = posXY[0];
-            int userDotY = posXY[1];
             check = degree;
-            Log.v(TAG, "Check Degrees:" + Float.toString(check));
-            Log.v(TAG, "Start Degrees:" + Float.toString(startDegree));
-            Log.v(TAG, "Actual Degree:" + Float.toString(random));
-            Log.v(TAG, "User X: " + Integer.toString(userDotX));
-            Log.v(TAG, "User Y: " + Integer.toString(userDotY));
+            Log.v(TAG, "Check Degrees: " + Float.toString(check));
+            Log.v(TAG, "Start Degrees: " + Float.toString(startDegree));
+            Log.v(TAG, "Actual Degree: " + Float.toString(random));
+            Log.v(TAG, "Status Flag: " + Integer.toString(statusFlag));
+
             degreeText.setText(Float.toString(check) + "°");
-            if(check >= 0 && check < 90){
-                background.setBackgroundColor(Color.BLUE);
-                degreeText.setTextColor(Color.WHITE);
-            } else if(check >= 90 && check < 180){
-                background.setBackgroundColor(Color.GREEN);
-                degreeText.setTextColor(Color.WHITE);
-            } else if(check >= 180 && check < 270){
-                background.setBackgroundColor(Color.MAGENTA);
-                degreeText.setTextColor(Color.BLACK);
-            } else if(check >= 270 && check <= 360){
-                background.setBackgroundColor(Color.YELLOW);
-                degreeText.setTextColor(Color.BLACK);
-            }
+            changeBackgroundColour(check);
+            statusFlag = setTargets(check, statusFlag);
         }
+    }
+
+    public void changeBackgroundColour(float check){
+        if(check >= 0 && check < 90){
+            background.setBackgroundColor(Color.BLUE);
+            degreeText.setTextColor(Color.WHITE);
+        } else if(check >= 90 && check < 180){
+            background.setBackgroundColor(Color.GREEN);
+            degreeText.setTextColor(Color.WHITE);
+        } else if(check >= 180 && check < 270){
+            background.setBackgroundColor(Color.MAGENTA);
+            degreeText.setTextColor(Color.BLACK);
+        } else if(check >= 270 && check <= 360){
+            background.setBackgroundColor(Color.YELLOW);
+            degreeText.setTextColor(Color.BLACK);
+        }
+    }
+
+    public int setTargets(float check, int statusFlag){
+        //First Target at 74 degrees
+        //Second Target at 227 degrees
+        if(check == 0 && statusFlag == 0){
+            targetDot1.setVisibility(View.VISIBLE);
+            targetDot2.setVisibility(View.INVISIBLE);
+        } else if(check == 74 && statusFlag == 0){
+            statusFlag = statusFlag + 1;
+            targetDot1.setVisibility(View.INVISIBLE);
+            targetDot2.setVisibility(View.VISIBLE);
+        } else if((check == 227) && (statusFlag == 1)){
+            targetDot2.setVisibility(View.INVISIBLE);
+            degreeText.setText("Unlocked!");
+            statusFlag = statusFlag + 1;
+            sensorManager.unregisterListener(this);
+        }
+        return statusFlag;
     }
 }
