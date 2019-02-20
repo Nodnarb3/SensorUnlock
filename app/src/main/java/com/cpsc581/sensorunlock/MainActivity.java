@@ -37,7 +37,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     RotateAnimation rotateAnimation;
 
     boolean isFirst = true;
-    ImageView userDot;
+    ImageView userDotRed;
+    ImageView userDotBlue;
     ImageView targetDot1;
     ImageView targetDot2;
     TextView degreeText;
@@ -60,7 +61,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setContentView(R.layout.activity_main);
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         oSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-        userDot = (ImageView) findViewById(R.id.userView);
+        userDotRed = (ImageView) findViewById(R.id.userView);
+        userDotBlue = (ImageView) findViewById(R.id.userViewBlue);
         targetDot1 = (ImageView) findViewById(R.id.targetDot1);
         targetDot2 = (ImageView) findViewById(R.id.targetDot2);
         degreeText = (TextView) findViewById(R.id.degreeTextView);
@@ -148,21 +150,39 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         rotateAnimation.setDuration(200);
 
         rotateAnimation.setFillAfter(true);
+        float currentAlpha = userDotRed.getAlpha();
+        float targetDotDegree;
+        if (targetDot1.getVisibility() == View.VISIBLE){
+            targetDotDegree = 74;
+        }
+        else{
+            targetDotDegree = 227;
+        }
+        // Distance between target dot and user dot is increasing
+        if(Math.abs(180 - degree) < Math.abs(180-currentDegree)){
+            userDotRed.setAlpha(currentAlpha - 0.00555556f);
+        }
+        if(Math.abs(180 - degree) > Math.abs(180-currentDegree)){
+            userDotRed.setAlpha(currentAlpha + 0.00555556f);
+        }
 
-        userDot.startAnimation(rotateAnimation);
-        currentDegree = degree;
+
+        userDotRed.startAnimation(rotateAnimation);
+        userDotBlue.startAnimation(rotateAnimation);
         if(check != degree);
         {
             check = degree;
             Log.v(TAG, "Check Degrees: " + Float.toString(check));
             Log.v(TAG, "Start Degrees: " + Float.toString(startDegree));
             Log.v(TAG, "Actual Degree: " + Float.toString(random));
+            Log.v(TAG, "Previous Degree: " + Float.toString(currentDegree));
             Log.v(TAG, "Status Flag: " + Integer.toString(statusFlag));
 
             degreeText.setText(Float.toString(check) + "°");
-            changeBackgroundColour(check);
+            //changeBackgroundColour(check);
             statusFlag = setTargets(check, statusFlag);
         }
+        currentDegree = degree;
     }
 
     public void changeBackgroundColour(float check){
@@ -191,7 +211,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         dotDrawable.setColorFilter(dotColour, PorterDuff.Mode.MULTIPLY);
 
-        userDot.setImageDrawable(dotDrawable);
+        userDotRed.setImageDrawable(dotDrawable);
+        userDotBlue.setImageDrawable(dotDrawable);
     }
 
     public int setTargets(float check, int statusFlag){
