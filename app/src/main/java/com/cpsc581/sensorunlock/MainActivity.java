@@ -1,6 +1,13 @@
 package com.cpsc581.sensorunlock;
 
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.hardware.Sensor;
@@ -35,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     ImageView targetDot2;
     TextView degreeText;
     View background;
+
+    Drawable dotDrawable;
     float currentDegree = 0f;
     int[] posXY = new int[2];
     int userX;
@@ -56,6 +65,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         targetDot2 = (ImageView) findViewById(R.id.targetDot2);
         degreeText = (TextView) findViewById(R.id.degreeTextView);
         background = (View) findViewById(R.id.background);
+        background.setBackgroundColor(Color.BLACK);
+        degreeText.setTextColor(Color.WHITE);
+
+        dotDrawable = getResources().getDrawable(R.drawable.userdot_drawable);
+
     }
 
     @Override
@@ -152,19 +166,32 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     public void changeBackgroundColour(float check){
+        int dotColour = Color.WHITE;
         if(check >= 0 && check < 90){
-            background.setBackgroundColor(Color.BLUE);
-            degreeText.setTextColor(Color.WHITE);
+            dotColour = Color.BLUE;
+            dotDrawable.setColorFilter(new PorterDuffColorFilter(0xffff00, PorterDuff.Mode.SRC_IN));
+            //background.setBackgroundColor(Color.BLUE);
+            //degreeText.setTextColor(Color.WHITE);
         } else if(check >= 90 && check < 180){
-            background.setBackgroundColor(Color.GREEN);
-            degreeText.setTextColor(Color.WHITE);
+            dotColour = Color.GREEN;
+            dotDrawable.setColorFilter(new PorterDuffColorFilter(Color.GREEN, PorterDuff.Mode.MULTIPLY));
+            //background.setBackgroundColor(Color.GREEN);
+            //degreeText.setTextColor(Color.WHITE);
         } else if(check >= 180 && check < 270){
-            background.setBackgroundColor(Color.MAGENTA);
-            degreeText.setTextColor(Color.BLACK);
+            dotColour = Color.MAGENTA;
+            dotDrawable.setColorFilter(new PorterDuffColorFilter(Color.MAGENTA, PorterDuff.Mode.MULTIPLY));
+            //background.setBackgroundColor(Color.MAGENTA);
+            //degreeText.setTextColor(Color.BLACK);
         } else if(check >= 270 && check <= 360){
-            background.setBackgroundColor(Color.YELLOW);
-            degreeText.setTextColor(Color.BLACK);
+            dotColour = Color.YELLOW;
+            dotDrawable.setColorFilter(new PorterDuffColorFilter(Color.YELLOW, PorterDuff.Mode.MULTIPLY));
+           // background.setBackgroundColor(Color.YELLOW);
+            //degreeText.setTextColor(Color.BLACK);
         }
+
+        dotDrawable.setColorFilter(dotColour, PorterDuff.Mode.MULTIPLY);
+
+        userDot.setImageDrawable(dotDrawable);
     }
 
     public int setTargets(float check, int statusFlag){
