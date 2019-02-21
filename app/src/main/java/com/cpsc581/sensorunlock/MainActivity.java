@@ -38,6 +38,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     float currentAlpha;
     float targetDotDegree;
 
+    float comboCode1 = 100f;
+    float comboCode2 = 359f;
+    float comboCode3 = 90f;
+
     boolean isFirst = true;
     ImageView userDotRed;
     ImageView userDotBlue;
@@ -77,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         dotDrawable = getResources().getDrawable(R.drawable.userdot_drawable);
 
 
-        currentAlpha = Math.abs(74-90) * 0.011111f;
+        currentAlpha = Math.abs(comboCode1-90) * 0.011111f;
         userDotRed.setAlpha(currentAlpha);
         userDotBlue.setAlpha(0f);
         userDotWhite.setAlpha(1f);
@@ -122,12 +126,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void getOrientation(SensorEvent event){
         //TODO Use this value to rotate something on the screen
         if (statusFlag == 0){
-            targetDotDegree = 74;
+            targetDotDegree = comboCode1;
         }
         else if (statusFlag == 1){
-            targetDotDegree = 227;
+            targetDotDegree = comboCode2;
         } else {
-            targetDotDegree = 100;
+            targetDotDegree = comboCode3;
         }
         //timeView.setText(Float.toString(Math.round(event.values[0])));
         if(isFirst == true){
@@ -259,18 +263,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public int setTargets(float check, int statusFlag){
        targetDot1.setVisibility(View.INVISIBLE);
        targetDot2.setVisibility(View.INVISIBLE);
-        //First Target at 74 degrees
-        //Second Target at 227 degrees
+        //First Target at comboCode1 degrees
+        //Second Target at comboCode2 degrees
         if(check == 0 && statusFlag == 0){
             //targetDot1.setVisibility(View.VISIBLE);
             //targetDot2.setVisibility(View.INVISIBLE);
-        } else if(check == 74 && statusFlag == 0){
+        } else if(check == comboCode1 && statusFlag == 0){
             statusFlag = statusFlag + 1;
             //targetDot1.setVisibility(View.INVISIBLE);
             //targetDot2.setVisibility(View.VISIBLE);
-        } else if((check == 227) && (statusFlag == 1)){
+        } else if((check == comboCode2) && (statusFlag == 1)){
             statusFlag = statusFlag + 1;
-        } else if((check == 100) && (statusFlag == 2)){
+        } else if((check == comboCode3) && (statusFlag == 2)){
             //targetDot2.setVisibility(View.INVISIBLE);
             degreeText.setText("Unlocked!");
             statusFlag = statusFlag + 1;
