@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float check = 0f;
     private static float startDegree = 0f;
     RotateAnimation rotateAnimation;
+    float currentAlpha;
+    float targetDotDegree;
 
     boolean isFirst = true;
     ImageView userDotRed;
@@ -72,6 +74,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         dotDrawable = getResources().getDrawable(R.drawable.userdot_drawable);
 
+        currentAlpha = Math.abs(74-180) * 0.00555556f;
+        userDotRed.setAlpha(currentAlpha);
     }
 
     @Override
@@ -112,14 +116,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private void getOrientation(SensorEvent event){
         //TODO Use this value to rotate something on the screen
-
+        if (targetDot1.getVisibility() == View.VISIBLE){
+            targetDotDegree = 74;
+        }
+        else{
+            targetDotDegree = 227;
+        }
         //timeView.setText(Float.toString(Math.round(event.values[0])));
         if(isFirst == true){
             startDegree = Math.round(event.values[0]);
             isFirst = false;
         }
-        float random = Math.round(event.values[0]);
-        float degree = modulo(((random) - startDegree),360);
+        float actualDegree = Math.round(event.values[0]);
+        float degree = modulo(((actualDegree) - startDegree),360);
 
         rotateAnimation = new RotateAnimation(currentDegree, degree, Animation.RELATIVE_TO_PARENT, 0f, Animation.RELATIVE_TO_PARENT, 0.25f);
         /*
@@ -150,21 +159,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         rotateAnimation.setDuration(200);
 
         rotateAnimation.setFillAfter(true);
-        float currentAlpha = userDotRed.getAlpha();
-        float targetDotDegree;
-        if (targetDot1.getVisibility() == View.VISIBLE){
-            targetDotDegree = 74;
-        }
-        else{
-            targetDotDegree = 227;
-        }
+
+
+        currentAlpha = userDotRed.getAlpha();
+
+        userDotRed.setAlpha(0.005555555555555f * Math.abs(modulo((degree - targetDotDegree), 360) - 180));
+        /*
         // Distance between target dot and user dot is increasing
-        if(Math.abs(180 - degree) < Math.abs(180-currentDegree)){
-            userDotRed.setAlpha(currentAlpha - 0.00555556f);
+        if(Math.abs(180 - degree) < Math.abs(180 - currentDegree)){
+            userDotRed.setAlpha(0.00555556f * Math.abs(180-degree));
+            //userDotRed.setAlpha(currentAlpha - 0.00555556f);
         }
-        if(Math.abs(180 - degree) > Math.abs(180-currentDegree)){
-            userDotRed.setAlpha(currentAlpha + 0.00555556f);
+        if(Math.abs(180 - degree) > Math.abs(180 - currentDegree)){
+            userDotRed.setAlpha(0.00555556f * Math.abs(180-degree));
+            //userDotRed.setAlpha(currentAlpha + 0.00555556f);
         }
+        */
+
 
 
         userDotRed.startAnimation(rotateAnimation);
@@ -174,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             check = degree;
             Log.v(TAG, "Check Degrees: " + Float.toString(check));
             Log.v(TAG, "Start Degrees: " + Float.toString(startDegree));
-            Log.v(TAG, "Actual Degree: " + Float.toString(random));
+            Log.v(TAG, "Actual Degree: " + Float.toString(actualDegree));
             Log.v(TAG, "Previous Degree: " + Float.toString(currentDegree));
             Log.v(TAG, "Status Flag: " + Integer.toString(statusFlag));
 
