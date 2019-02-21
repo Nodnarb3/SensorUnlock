@@ -74,8 +74,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         dotDrawable = getResources().getDrawable(R.drawable.userdot_drawable);
 
-        currentAlpha = Math.abs(74-180) * 0.00555556f;
-        userDotRed.setAlpha(currentAlpha);
+        userDotRed.setAlpha(Math.abs(74-180) * 0.0055555555555f);
+        userDotBlue.setAlpha(1 - (Math.abs(180-74) * 0.005555555555f));
     }
 
     @Override
@@ -163,7 +163,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         currentAlpha = userDotRed.getAlpha();
 
-        userDotRed.setAlpha(0.005555555555555f * Math.abs(modulo((degree - targetDotDegree), 360) - 180));
+        float alphaNumber = 0.005555555555555f * Math.abs(modulo((degree - targetDotDegree), 360) - 180);
+        userDotRed.setAlpha(alphaNumber);
+        userDotBlue.setAlpha(1-alphaNumber);
         /*
         // Distance between target dot and user dot is increasing
         if(Math.abs(180 - degree) < Math.abs(180 - currentDegree)){
