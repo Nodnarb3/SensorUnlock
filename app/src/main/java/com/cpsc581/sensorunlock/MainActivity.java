@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     boolean isFirst = true;
     ImageView userDotRed;
     ImageView userDotBlue;
+    ImageView userDotWhite;
     ImageView targetDot1;
     ImageView targetDot2;
     TextView degreeText;
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         oSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
         userDotRed = (ImageView) findViewById(R.id.userView);
         userDotBlue = (ImageView) findViewById(R.id.userViewBlue);
+        userDotWhite = (ImageView) findViewById(R.id.userViewWhite);
         targetDot1 = (ImageView) findViewById(R.id.targetDot1);
         targetDot2 = (ImageView) findViewById(R.id.targetDot2);
         degreeText = (TextView) findViewById(R.id.degreeTextView);
@@ -74,8 +76,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         dotDrawable = getResources().getDrawable(R.drawable.userdot_drawable);
 
-        userDotRed.setAlpha(Math.abs(74-180) * 0.0055555555555f);
-        userDotBlue.setAlpha(1 - (Math.abs(180-74) * 0.005555555555f));
+
+        currentAlpha = Math.abs(74-90) * 0.011111f;
+        userDotRed.setAlpha(currentAlpha);
+        userDotBlue.setAlpha(0f);
+        userDotWhite.setAlpha(1f);
     }
 
     @Override
@@ -162,12 +167,31 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         rotateAnimation.setFillAfter(true);
 
+        if(modulo(targetDotDegree - degree,360) < 90){
+            currentAlpha = userDotRed.getAlpha();
+            userDotBlue.setAlpha(0f);
+            float alphaNumber = 0.0111111f * Math.abs(modulo((targetDotDegree - degree), 360) - 90);
+            Log.v(TAG, "Alpha Number"+  Float.toString(alphaNumber));
+            userDotRed.setAlpha(alphaNumber);
+        }
+        if(modulo(targetDotDegree - degree,360) > 90 &&modulo(targetDotDegree - degree,360) < 180){
+            userDotRed.setAlpha(0f);
+            currentAlpha = userDotBlue.getAlpha();
+            userDotBlue.setAlpha(1- (0.0111f * Math.abs(modulo((degree - targetDotDegree), 360) - 180)));
+        }
+        if(modulo(targetDotDegree - degree,360) > 180 &&modulo(targetDotDegree - degree,360) < 270){
+            userDotRed.setAlpha(0f);
+            currentAlpha = userDotBlue.getAlpha();
+            userDotBlue.setAlpha(1- (0.0111f * Math.abs(modulo((degree - targetDotDegree), 360) - 180)));
+        }
+        if(modulo(targetDotDegree - degree,360) > 270 &&modulo(targetDotDegree - degree,360) < 360){
+            currentAlpha = userDotRed.getAlpha();
+            userDotBlue.setAlpha(0f);
+            float alphaNumber = 0.011111111f * Math.abs(modulo((degree - targetDotDegree), 360) - 90);
+            Log.v(TAG, "Alpha Number"+  Float.toString(alphaNumber));
+            userDotRed.setAlpha(alphaNumber);
+        }
 
-        currentAlpha = userDotRed.getAlpha();
-
-        float alphaNumber = 0.005555555555555f * Math.abs(modulo((degree - targetDotDegree), 360) - 180);
-        userDotRed.setAlpha(alphaNumber);
-        userDotBlue.setAlpha(1-alphaNumber);
         /*
         // Distance between target dot and user dot is increasing
         if(Math.abs(180 - degree) < Math.abs(180 - currentDegree)){
@@ -184,6 +208,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         userDotRed.startAnimation(rotateAnimation);
         userDotBlue.startAnimation(rotateAnimation);
+        userDotWhite.startAnimation(rotateAnimation);
         if(check != degree);
         {
             check = degree;
@@ -228,6 +253,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         userDotRed.setImageDrawable(dotDrawable);
         userDotBlue.setImageDrawable(dotDrawable);
+        userDotWhite.setImageDrawable(dotDrawable);
     }
 
     public int setTargets(float check, int statusFlag){
