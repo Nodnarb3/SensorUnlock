@@ -116,11 +116,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private void getOrientation(SensorEvent event){
         //TODO Use this value to rotate something on the screen
-        if (targetDot1.getVisibility() == View.VISIBLE){
+        if (statusFlag == 0){
             targetDotDegree = 74;
         }
-        else{
+        else if (statusFlag == 1){
             targetDotDegree = 227;
+        } else {
+            targetDotDegree = 100;
         }
         //timeView.setText(Float.toString(Math.round(event.values[0])));
         if(isFirst == true){
@@ -229,17 +231,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     public int setTargets(float check, int statusFlag){
+       targetDot1.setVisibility(View.INVISIBLE);
+       targetDot2.setVisibility(View.INVISIBLE);
         //First Target at 74 degrees
         //Second Target at 227 degrees
         if(check == 0 && statusFlag == 0){
-            targetDot1.setVisibility(View.VISIBLE);
-            targetDot2.setVisibility(View.INVISIBLE);
+            //targetDot1.setVisibility(View.VISIBLE);
+            //targetDot2.setVisibility(View.INVISIBLE);
         } else if(check == 74 && statusFlag == 0){
             statusFlag = statusFlag + 1;
-            targetDot1.setVisibility(View.INVISIBLE);
-            targetDot2.setVisibility(View.VISIBLE);
+            //targetDot1.setVisibility(View.INVISIBLE);
+            //targetDot2.setVisibility(View.VISIBLE);
         } else if((check == 227) && (statusFlag == 1)){
-            targetDot2.setVisibility(View.INVISIBLE);
+            statusFlag = statusFlag + 1;
+        } else if((check == 100) && (statusFlag == 2)){
+            //targetDot2.setVisibility(View.INVISIBLE);
             degreeText.setText("Unlocked!");
             statusFlag = statusFlag + 1;
             sensorManager.unregisterListener(this);
