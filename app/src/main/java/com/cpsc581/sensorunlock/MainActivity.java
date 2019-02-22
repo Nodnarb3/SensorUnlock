@@ -1,13 +1,16 @@
 package com.cpsc581.sensorunlock;
 
+import android.animation.Animator;
+import android.animation.FloatEvaluator;
+import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
-import android.support.v4.content.ContextCompat;
+import android.os.Handler;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.renderscript.Sampler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.hardware.Sensor;
@@ -22,6 +25,9 @@ import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.devs.vectorchildfinder.VectorChildFinder;
+import com.devs.vectorchildfinder.VectorDrawableCompat;
 
 /*
 * Referenced from https://www.javacodegeeks.com/2013/09/android-compass-code-example.html
@@ -51,6 +57,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     TextView degreeText;
     View background;
 
+    ImageView lock;
+
+    Vibrator vibrator;
+
     Drawable dotDrawable;
     float currentDegree = 0f;
     int[] posXY = new int[2];
@@ -78,8 +88,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         background.setBackgroundColor(Color.BLACK);
         degreeText.setTextColor(Color.WHITE);
 
+        lock = findViewById(R.id.lockView);
+        lock.setColorFilter(Color.RED);
+
         dotDrawable = getResources().getDrawable(R.drawable.userdot_drawable);
 
+        vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
         currentAlpha = Math.abs(comboCode1-90) * 0.011111f;
         userDotRed.setAlpha(currentAlpha);
@@ -270,16 +284,120 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             //targetDot2.setVisibility(View.INVISIBLE);
         } else if(check == comboCode1 && statusFlag == 0){
             statusFlag = statusFlag + 1;
+            pulseLock();
             //targetDot1.setVisibility(View.INVISIBLE);
             //targetDot2.setVisibility(View.VISIBLE);
         } else if((check == comboCode2) && (statusFlag == 1)){
             statusFlag = statusFlag + 1;
+            pulseLock();
         } else if((check == comboCode3) && (statusFlag == 2)){
             //targetDot2.setVisibility(View.INVISIBLE);
-            degreeText.setText("Unlocked!");
+            unlockPhone();
+
             statusFlag = statusFlag + 1;
             sensorManager.unregisterListener(this);
         }
         return statusFlag;
+    }
+
+    private Animator pulseLock() {
+        ValueAnimator anim = ValueAnimator.ofObject(new FloatEvaluator(), 1f, 1.5f, 1f);
+        anim.setDuration(300);
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                lock.setScaleX((float)animation.getAnimatedValue());
+                lock.setScaleY((float)animation.getAnimatedValue());
+            }
+        });
+        anim.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                vibrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+
+        anim.start();
+
+        return anim;
+    }
+
+    private void unlockPhone() {
+        //degreeText.setText("Unlocked!");
+
+        final VectorDrawableCompat.VFullPath unlockbar = new VectorChildFinder(this, R.drawable.ic_lock, lock).findPathByName("ubar");
+
+        final ValueAnimator anim = ValueAnimator.ofObject(new FloatEvaluator(), 1f, 0.75f);
+        anim.setDuration(250);
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                unlockbar.setTrimPathEnd((float)animation.getAnimatedValue());
+                lock.invalidate();
+            }
+        });
+        anim.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                lock.setColorFilter(Color.GREEN);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        finish();
+                    }
+                }, 250);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+
+        pulseLock().addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                anim.start();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
     }
 }
