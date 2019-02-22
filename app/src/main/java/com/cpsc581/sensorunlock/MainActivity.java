@@ -313,12 +313,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         anim.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
+                lock.setColorFilter(Color.GREEN);
                 vibrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
-
+                lock.setColorFilter(Color.RED);
             }
 
             @Override
